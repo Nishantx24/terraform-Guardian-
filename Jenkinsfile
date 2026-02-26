@@ -20,16 +20,6 @@ pipeline {
             }
         }
 
-      stages {
-
-        stage('Checkout Code') {
-            steps {
-                git branch: 'main',
-                    credentialsId: 'git-token-id',
-                    url: 'https://github.com/YOUR-USERNAME/YOUR-REPO.git'
-            }
-        }
-
         stage('Terraform Init') {
             steps {
                 dir('terraform') {
@@ -78,7 +68,8 @@ pipeline {
             }
         }
     }
-          post {
+
+    post {
         success {
             echo '[SUCCESS] Build Successful - Terraform + Infracost completed'
         }
