@@ -1,5 +1,10 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'ghcr.io/terraform-linters/tflint:latest'
+            args '-u root:root'
+        }
+    }
 
     environment {
         INFRACOST_API_KEY = credentials('infracost-api-key')
@@ -17,6 +22,24 @@ pipeline {
                 git branch: 'main',
                     credentialsId: 'Nishantx24',
                     url: 'https://github.com/Nishantx24/terraform-Guardian-.git'
+            }
+        }
+
+        stage('Install Terraform & Infracost') {
+            steps {
+                sh '''
+                apt-get update
+                apt-get install -y curl unzip
+
+                # Install Terraform
+                curl -LO https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_linux_amd64.zip
+                unzip terraform_1.7.5_linux_amd64.zip
+                mv terraform /usr/local/bin/
+                chmod +x /usr/local/bin/terraform
+
+                # Install Infracost
+                curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+                '''
             }
         }
 
